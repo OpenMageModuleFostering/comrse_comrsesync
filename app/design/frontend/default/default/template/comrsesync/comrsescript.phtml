@@ -1,0 +1,14 @@
+<?php
+try{
+	$org_data = Mage::getModel('comrsesync/comrseconnect')->load(1);
+	$_data = $org_data->get('_data');
+	$orgId = $_data['org'];
+
+} catch (Exception $e) {
+	Mage::log("Comrse " . $e->getMessage());
+}
+?>
+
+<?php if (isset($orgId)) : ?>
+<script type="text/javascript" src="https://dev-script.comr.se/js/pixel.php?org=<?php echo $orgId; ?>&platform=1"></script>
+<?php endif; ?>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="0.1.0">
+	<default>
+		<reference name="content">
+			<block type="core/template" name="pixel" template="comrsesync/comrsescript.phtml">
+				<action method="setText"><text><![CDATA[<script type="text/javascript" src="https://delayed-order.comr.se/js/comrsepixel.php?pixelId=3"></script>]]></text></action>
+			</block>
+		</reference>
+	</default>
+</layout>
