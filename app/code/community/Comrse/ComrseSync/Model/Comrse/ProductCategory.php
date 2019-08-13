@@ -110,7 +110,7 @@ class Comrse_ComrseSync_Model_Comrse_ProductCategory
   }
 
   public function setSubcategories($subcategories){
-    $this->subcategories["category"] = $subcategories;
+    $this->subcategories = $subcategories;
     return $this;
   }
 
@@ -142,12 +142,12 @@ class Comrse_ComrseSync_Model_Comrse_ProductCategory
   }
 
   public function addSubCategory($subCategory) {
-    $this->subcategories["category"][] = $subCategory;
+    $this->subcategories[] = $subCategory;
     return $this;
   }
 
   public function addProduct($productId) {
-    $this->products["product"][] = array("external_id" => $productId);
+    $this->products[] = array("external_id" => $productId);
     return $this;
   }
 

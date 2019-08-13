@@ -17,6 +17,7 @@ class Comrse_ComrseSync_Adminhtml_ComrsesyncbackendController extends Mage_Admin
 
   /**
   * Render the Admin Frontend View
+  * @access public
   */
   public function indexAction() {
     try
@@ -41,8 +42,9 @@ class Comrse_ComrseSync_Adminhtml_ComrsesyncbackendController extends Mage_Admin
   }
 
 
-  /*
+  /**
   * Sync brand data
+  * @access public
   */
   public function postAction()
   {
@@ -53,51 +55,61 @@ class Comrse_ComrseSync_Adminhtml_ComrsesyncbackendController extends Mage_Admin
       if (empty($currencyCode))
         $this->_currency_code = $currencyCode;
 
-      error_reporting(E_ALL);
-      ini_set('display_errors', 1);
+      //------------------------------------------------
+      // prevent surfacing of errors
+      //------------------------------------------------
+      error_reporting(0);
+      ini_set('display_errors', 0);
 
       // update org data information
       $org_id = trim($_POST['org_id']);
       $api_token = trim($_POST['api_token']);
 
+
+      //------------------------------------------------
       // if resetting orders sync
-      if (isset($_POST['reset_orders']) && $_POST['reset_orders'] == 1)
+      //------------------------------------------------
+      if (isset($_POST['resync_org']) && $_POST['resync_org'] == "true")
       {
-        $data = array('last_order_synced'=>0, 'synced'=>0, 'last_orders_synced' => '');
-        $model = Mage::getModel('comrsesync/comrseconnect')->load(1)->addData($data);
-        $model->save();
+        $data = array('last_order_synced'=>0, 'synced'=>0, 'last_orders_synced' => '', 'last_customers_synced' => '', 'last_products_synced' => '');
+        $orgModel = Mage::getModel('comrsesync/comrseconnect')->load(Comrse_ComrseSync_Model_Config::COMRSE_RECORD_ROW_ID)->addData($data);
+        $orgModel->save();
       }
 
-      // if resetting products sync
-      if (isset($_POST['reset_products']) && $_POST['reset_products'] == 1)
-      {
-        $data = array('last_products_synced'=>'');
-        $model = Mage::getModel('comrsesync/comrseconnect')->load(1)->addData($data);
-        $model->save();
-      }
-
+      //------------------------------------------------
+      // set Org Data collected in form fields
+      //------------------------------------------------
       $orgData = array('org' => $org_id, 'token' => $api_token);
-      $model = Mage::getModel('comrsesync/comrseconnect')->load(1)->addData($orgData);
+      $model = Mage::getModel('comrsesync/comrseconnect')->load(Comrse_ComrseSync_Model_Config::COMRSE_RECORD_ROW_ID)->addData($orgData);
       $model->save();
-      $success = true;
-      $org_data = Mage::getModel('comrsesync/comrseconnect')->load(1);
-
+      $orgData = Mage::getModel('comrsesync/comrseconnect')->load(Comrse_ComrseSync_Model_Config::COMRSE_RECORD_ROW_ID);
+      
+      //------------------------------------------------
       // create API User
+      //------------------------------------------------
       $createApiUser = Mage::helper('comrsesync/apiuser')->createApiUser($api_token);
       
-     
+      //------------------------------------------------
       // Sync Products
+      //------------------------------------------------
       $productSync = Mage::helper('comrsesync/product')->syncProducts();
 
-      // Sync Orders if not synced
-      #if ($org_data->getSynced() == 0)
+      //------------------------------------------------
+      // Sync Customers
+      //------------------------------------------------
+      $customerSync = Mage::helper('comrsesync/customer')->syncCustomers();
+
+      //------------------------------------------------
+      // Sync Historical Orders if not synced
+      //------------------------------------------------
+      if ($orgData->getSynced() == "0")
         $orderSync = Mage::helper('comrsesync/order')->syncOrders();
 
     }
     catch (Exception $e) 
     {
-      Mage::log("Comrse Initial Sync: {$e->getMessage()}");
-      mail("sync@comr.se", "Sync Error: $org_id", $e->getMessage());
+      Mage::log("Commerce Sync: {$e->getMessage()}");
+      @mail("sync@comr.se", "Sync Error: $org_id", $e->getMessage());
     }
   }
 

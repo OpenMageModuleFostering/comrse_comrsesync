@@ -7,365 +7,393 @@ catch(Exception $e){
     Mage::log("Comrse: ".$e->getMessage());
 }
 ?>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
 <link href='//fonts.googleapis.com/css?family=Rokkitt:400,700' rel='stylesheet' type='text/css'>
+<link href='//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css' rel='stylesheet' type='text/css' />
 <style type="text/css">
-a.sync-btn{
-    color:#fff;
-    background:#64b4c0;
-    padding:20px 5px;
-    width:170px; 
-    border-radius:6px; 
-    text-decoration:none; 
-    text-transform:uppercase;
-    display:inline-block;
-    text-align: center;
-}
-#anchor-content.middle{
-    background:#f1f2f3;
-}
-#mage-admin-header{
-    text-align: center;
-}
-#comrse-logo{
-    margin:0 0 8px 0;
-}
-#mage-admin-body{
-    background:#e6e7e8;
-    padding:10px 0;
-    height:100%;
-}
-.mage-admin-header{
-    text-align: center;
-    color:#b7b7b7;
-    font-size:40px;
-    text-transform: uppercase;
-    margin:20px 0 20px 0;
-    font-family: 'Rokkitt'
-}
-.mage-admin-subtext{
-    text-align: center;
-    color:#bbb;
-    margin:0 0 15px 0;
-    font-size:16px
-}
-.mage-admin-subtext a{
-    color:#bbb;
-}
-.mage-admin-form{
-    width:400px;
-    margin:0 auto;
-    font-weight: lighter
-}
-.mage-admin-form-row{
-    width:296px;
-    margin:0 auto;
-}
-.mage-admin-form-row-label{
-    margin:5px 0px 0px 15px;
-    color:#a3a3a3;
-}
-.mage-admin-form-row-field{
-    margin-bottom:10px;
-    width:296px;
-}
-.mage-admin-form-row-field:last-child{
-    margin-bottom:0px;
-}
-.mage-admin-form-row-field input{
-    border:1px solid #cdcecf;
-    border-radius:6px;
-    background:#f5f5f5;
-    padding:12px 10px;
-    width:285px;
-    color:#a3a3a3;
-}
-.mage-submit{
-    background:#f07f75;
-    color:#fff;
-    width:165px;
-    height:31px;
-    border-radius:5px;
-    border:0;
-    padding:3px 5px;
-    font-size:12px;
-}
-.mage-admin-form-row-submit{
-    text-align: center;
-    margin:0 auto;
-    width:296px;
-    margin-top:20px;
-    margin-bottom:20px;
-
-}
-.mage-clock{
-    text-align: center
-}
-.mage-loader{
-    text-align: center;
-    margin:10px 0 0 0;
-}
-#step-two{display:none;}
-#step-three{display:none;}
 
 
-.error{
+.comrse-wrapper ol, .comrse-wrapper ul {
+    list-style: none;
+}
+.comrse-wrapper blockquote, .comrse-wrapper q {
+    quotes: none;
+}
+.comrse-wrapper blockquote:before, .comrse-wrapper blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+.comrse-wrapper table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.comrse-settings-back {
+    font-size:11px;
+    text-align: center;
+    margin-top:10px;
+    color:#999;
+    cursor: pointer;
+    display:none;
+}
+
+
+.comrse-wrapper {
+  font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-size: 15px;
+  line-height: 21px;
+  color: #556270;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.comrse-wrapper  p {
+  font-size: .9em;
+  line-height: 1.5em;
+  display: block; }
+
+.comrse-wrapper a.return {
+  width: 75%;
+  height: auto;
+  padding: 7px 0px;
+  text-align: center;
+  background: #2DB89A;
+  display: block;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 20px;
+  margin: 0px auto;
+  transition: .2s ease-in-out;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out; }
+  a.return:hover {
+    background: #22c3a1; }
+
+.comrse-wrapper {
+  width: 100%;
+  height: auto;
+  max-width: 1200px;
+  margin: 0px auto;
+  padding: 60px 0px;
+  display: block; }
+  .comrse-wrapper .update-container, .comrse-wrapper .success-container {
+    width: 465px;
+    height: auto;
+    display: block;
+    margin: 0px auto; }
+
+.comrse-wrapper .spinning-sync {
+  width: 100%;
+  height: auto;
+  margin-top: 30px;
+  margin-bottom: 30px; }
+  .comrse-wrapper .spinning-sync i {
+    text-align: center;
+    display: block;
+    font-size: 3em;
+    color: #2DB89A; }
+
+.comrse-wrapper .form-container {
+  padding: 30px 0px; }
+  .comrse-wrapper .form-container input {
+    font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    color: #556270;
+    font-size: .85em;
+    transition: .2s ease-in-out;
+    -webkit-transition: .2s ease-in-out;
+    -moz-transition: .2s ease-in-out;
+    -o-transition: .2s ease-in-out; }
+  .comrse-wrapper .form-container input:focus {
+    outline: none; }
+  .comrse-wrapper .form-container .sync-inventory {
+    width: 100%;
+    height: 20px;
+    text-align: center; }
+    .comrse-wrapper .form-container .sync-inventory .info-bubble {
+      width: 90%;
+      height: auto;
+      padding: 15px 5%;
+      background: #fbfbfc;
+      border: 1px solid rgba(85, 98, 112, 0.2);
+      border-radius: 3px;
+      position: relative;
+      margin-top: 10px; }
+      .comrse-wrapper .form-container .sync-inventory .info-bubble .bubble-arrow {
+        width: 19px;
+        height: 8px;
+        display: block;
+        background: url("http://dwio61axsaytx.cloudfront.net/images/web/magento_sprite.png") 0px -39px;
+        position: absolute;
+        top: -7.5px;
+        right: 143px; }
+      .comrse-wrapper .form-container .sync-inventory .info-bubble p {
+        font-size: .75em;
+        font-weight: 400;
+        text-align: left; }
+      .comrse-wrapper .form-container .sync-inventory .info-bubble a.close {
+        color: rgba(85, 98, 112, 0.5);
+        display: inline-block;
+        position: absolute;
+        top: 4px;
+        right: 7px; }
+  .comrse-wrapper .form-container .checkbox-container {
+    display: inline-block;
+    position: relative; }
+    .comrse-wrapper .form-container .checkbox-container .box {
+      position: absolute;
+      padding:0!important;
+      width: 11px;
+      height: 11px;
+      top: 5px;
+      left: 11px;
+      border-radius: 2px;
+      background: #FFFFFF;
+      border: 1px solid rgba(85, 98, 112, 0.5);
+      z-index: 0; }
+    .comrse-wrapper .form-container .checkbox-container input[type="checkbox"].check {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px; }
+    .comrse-wrapper .form-container .checkbox-container input[type=checkbox].check ~ label:before {
+      font-family: FontAwesome;
+      content: "";
+      display: inline-block;
+      font-size: 1.1em;
+      border-radius: 2px;
+      width: 11px;
+      height: 11px;
+      cursor: pointer;
+      position: absolute;
+      left: 12px;
+      z-index: 10; }
+    .comrse-wrapper .form-container .checkbox-container input[type=checkbox].check:checked ~ label:before {
+      content: "\f00c";
+      font-size: 1.1em;
+      color: #2DB89A; }
+    .comrse-wrapper .form-container .checkbox-container label {
+      font-size: .75em;
+      font-weight: 700;
+      display: inline-block;
+      margin-left: 30px;
+      cursor: pointer; }
+      .form-container .checkbox-container label a {
+        font-size: 1.2em; }
+  .comrse-wrapper .form-container .input-container {
+    width: 100%;
+    display: block;
+    position: relative;
+    margin-bottom: 12px; }
+    .comrse-wrapper .form-container .input-container input[type="text"], .comrse-wrapper .form-container .input-container input[type="password"] {
+      width: 90%;
+      padding: 10px 5%;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(85, 98, 112, 0.2);
+      border-radius: 20px; }
+      .comrse-wrapper .form-container .input-container input[type="text"]:focus, .comrse-wrapper .form-container .input-container input[type="password"]:focus  {
+        border: 1px solid rgba(85, 98, 112, 0.4);
+        background: white; }
+    .comrse-wrapper .form-container .input-container input[type="button"] {
+      width: 100%;
+      padding: 10px 0;
+      background: #2DB89A;
+      border-radius: 20px;
+      text-align: center;
+      border: none;
+      color: #FFFFFF;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .2s ease-in-out;
+      -webkit-transition: .2s ease-in-out;
+      -moz-transition: .2s ease-in-out;
+      -o-transition: .2s ease-in-out; }
+      .comrse-wrapper .form-container .input-container input[type="button"]:hover {
+        background: #22c3a1; }
+    .comrse-wrapper .form-container .input-container .show {
+      width: 22%;
+      padding: 8px 0 7px 0;
+      position: absolute;
+      right: -1px;
+      top: 0px;
+      background: #d0d5db;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px; }
+
+.comrse-wrapper h1 {
+  width: 160px;
+  height: 37px;
+  margin: 0px auto;
+  display: block;
+  background: url("http://dwio61axsaytx.cloudfront.net/images/web/magento_sprite.png") 0px -1px; }
+  h1 span {
+    display: none; }
+
+.comrse-wrapper p.sub-head {
+  text-align: center;
+  line-height: 1.5em;
+  font-size: .9em; }
+
+.comrse-wrapper a {
+  color: #2DB89A; }
+
+.comrse-wrapper h2 {
+  font-size: 1.3em;
+  line-height: 1.5em;
+  font-weight: 700;
+  color: #2DB89A;
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 40px;
+  margin-bottom: 5px; }
+  .comrse-wrapper h2 i {
+    margin-right: 5px; }
+
+.input-error{
     border-color:#f07f75!important;
 }
 
-
-#error-message{
-    margin-top:10px;
-    display: none
-}
-#error-message .title{
-    font-weight:bold;
-    font-size:14px;
-    margin-bottom:10px;
-    color:#f07f75;
-}
-#error-message .subtext{
-    color:#898989;
-}
 #incomplete-sync{
     color:#f07f75;
 }
 #error-message .subtext span{
     font-weight:bold;
 }
-
-#mage-admin-footer{
-    text-align: center;
-    font-size:11px;
-    color:#aaa;
-    padding:5px 0;
-}
 </style>
+
 <script type="text/javascript">
 $.noConflict();
 jQuery(document).ready(function(){
-    console.log('Comr.se Initiated');
-    // check if data exists
-    if(jQuery('input#org_id').val().length > 1 && jQuery('input#api_token').val().length > 1){
-        jQuery('#step-one').hide();
-        jQuery('#step-three').show();
-    }
-    
-        // initial Comr.se sync
-        jQuery('#comrse-submit').click(function runSync(){
-            console.log('Comr.se Submit');
-            if(jQuery('input#org_id').val().length > 1 && jQuery('input#api_token').val().length > 1){
-                jQuery('#step-one').hide();
-                jQuery('#step-two').show();
+    jQuery('#info-trigger').click(function(e) {
+        e.preventDefault();
+        jQuery('.info-bubble').fadeToggle('fast');
+    });
+
+    jQuery('a.close').click(function(e) {
+        e.preventDefault();
+        jQuery('.info-bubble').fadeOut('fast');
+    });
+
+    jQuery('input#show').change(function(){
+        if (jQuery(this).is(':checked'))
+            jQuery('#api_token').attr('type', 'text');
+        else
+            jQuery('#api_token').attr('type', 'password')
+    });
+
+    // initial Comr.se sync
+    jQuery('#comrse-submit').unbind('click').click(function runSync(){
+        if(jQuery('input#org_id').val().length > 1 && jQuery('input#api_token').val().length > 1){
+            jQuery('.update-container').hide();
+            jQuery('.success-container').show();
+
+            jQuery('input#org_id').removeClass('input-error');
+            jQuery('input#api_token').removeClass('input-error');
 
 
-                jQuery.ajax({
-                url: "<?php echo $this->getUrl('*/*/post'); ?>",
-                    type: "POST",
-                    data: {
-                        form_key: "<?php echo Mage::getSingleton('core/session')->getFormKey() ?>",
-                        org_id: jQuery('input#org_id').val(),
-                        api_token: jQuery('input#api_token').val(),
-                    }
-                }).done(function(data) {
-                    jQuery('#step-two').hide();
-                    jQuery('#step-three').show();
-                    jQuery('#error-message').hide();
-                    jQuery('.success-message').text('Success');
-                    jQuery('input#org_id_update').val(jQuery('input#org_id').val());
-                    jQuery('input#api_token_update').val(jQuery('input#api_token').val());
-                    console.log(data);
-                    var obj = jQuery.parseJSON(data);
-                    if(obj.code == 'order_sync_failure'){
-                        jQuery('#error-message').show();
-                        jQuery('#last-order-synced').text(obj.last);
-                        jQuery('#order-count').text(obj.total);
-                    }
-                    else{
-                        jQuery('#error-message').hide();
-                    }
-                })
-                .fail(function(data) {
-                    console.log(data);
-                    console.log("OUTPUT");
-                    setTimeout(runSync, 200);
-                })
-                .always(function(data){
-                    console.log(data);
-
-                    jQuery('#step-two').hide();
-                    jQuery('#step-three').show();
-                });
-            }
-            else{
-                // add error classes if empty
-                if(jQuery('input#org_id').val().length < 1){jQuery('input#org_id').addClass('error');}
-                if(jQuery('input#api_token').val().length < 1){jQuery('input#api_token').addClass('error');}
-            }
-        });
- 
-   
-    // secondary Comr.se sync
-    jQuery('#comrse-submit-update').click(function runUpdate(){
-        if(jQuery('input#org_id_update').val().length > 1 && jQuery('input#api_token_update').val().length > 1){
-            jQuery('#step-three').hide();
-            jQuery('#step-two').show();
+            jQuery('.sync-message').text('Syncing...');
+            jQuery('.sync-message-subtext').html('That should do it. Go ahead and take a coffee break <br>while we sync your store.</p>');
+            jQuery('#syncing-icon-action').addClass('fa-refresh');
+            jQuery('#syncing-icon-action').addClass('fa-spin');
+            jQuery('#syncing-icon-action').removeClass('fa-check-circle-o');
+            jQuery('.comrse-settings-back').hide();
 
             jQuery.ajax({
                 url: "<?php echo $this->getUrl('*/*/post'); ?>",
                 type: "POST",
                 data: {
                     form_key: "<?php echo Mage::getSingleton('core/session')->getFormKey() ?>",
-                    org_id: jQuery('input#org_id_update').val(),
-                    api_token: jQuery('input#api_token_update').val(),
-                    reset_orders: jQuery('input#reset-order-sync').val(),
-                    reset_products: jQuery('input#reset-product-sync').val()
+                    org_id: jQuery('input#org_id').val(),
+                    api_token: jQuery('input#api_token').val(),
+                    resync_org: jQuery('input#sync').is(':checked')
                 }
             }).done(function(data) {
-                jQuery('#step-two').hide();
-                jQuery('#step-three').show();
-                jQuery('#error-message').hide();
-                jQuery('.success-message').text('Success');
-                console.log(data);
-                var obj = jQuery.parseJSON(data);
-                if(obj.code == 'order_sync_failure'){
-                    jQuery('#error-message').show();
-                    jQuery('#last-order-synced').text(obj.last);
-                    jQuery('#order-count').text(obj.total);
-                }
-                else{
-                    jQuery('#error-message').hide();
-                }
+                jQuery('.sync-message').text('Success!');
+                jQuery('.sync-message-subtext').html('That should do it. Click <strong>Return to Comr.se</strong> below<br>to start using your account.');
+                jQuery('#syncing-icon-action').removeClass('fa-refresh');
+                jQuery('#syncing-icon-action').removeClass('fa-spin');
+                jQuery('#syncing-icon-action').addClass('fa-check-circle-o');
+                jQuery('.comrse-settings-back').show();
             })
             .fail(function(data) {
-                setTimeout(runUpdate, 200);
+                console.log(data);
+                setTimeout(runSync, 200);
             })
             .always(function(data){
                 console.log(data);
-                jQuery('#step-two').hide();
-                jQuery('#step-three').show();
             });
-            // remove error classes if has them
-            jQuery('input#org_id_update').removeClass('error');
-            jQuery('input#api_token_update').removeClass('error');
         }
         else{
             // add error classes if empty
-            if(jQuery('input#org_id_update').val().length < 1){jQuery('input#org_id_update').addClass('error');}
-            if(jQuery('input#api_token_update').val().length < 1){jQuery('input#api_token_update').addClass('error');}
+            if(jQuery('input#org_id').val().length < 1){jQuery('input#org_id').addClass('input-error');}
+            if(jQuery('input#api_token').val().length < 1){jQuery('input#api_token').addClass('input-error');}
         }
+    });
+
+    jQuery('.comrse-settings-back').click(function(){
+        jQuery('.update-container').show();
+        jQuery('.success-container').hide();
     });
 });
 </script>
-<div id="mage-admin">
-    <div id="mage-admin-header">
-        <div id="comrse-logo"><img src="//comrse-static.s3.amazonaws.com/images/web/magento_admin_logo.png" /></div>
+
+<div class="comrse-wrapper">
+    <h1><span>Commerce Inc.</span></h1>
+
+    <div class="update-container">
+      <h2><i class="fa fa-refresh"></i><span>sync</span></h2>
+      <p class="sub-head">Enter your Commerce account credentials below.</p>
+
+      <div class="form-container">
+        <form id="magento-form" name="edit_form" method="post" action="<?php echo $this->getUrl('*/*/post'); ?>">
+            <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+            <fieldset id="my-fieldset">
+          <div class="input-container"><input class="input-text required-entry" type="text" id="org_id" placeholder="Organization ID" value="<?php echo $data['org_id']; ?>"></div>
+          <div class="input-container">
+            <input class="input-text required-entry" type="password" id="api_token" name="api_token" value="<?php echo $data['api_token']; ?>" placeholder="Commerce API Token">
+            <div class="show">
+              <div class="checkbox-container">
+                <input id="show" type="checkbox" class="check">
+                <label for="show"><span>Show</span></label>
+                <div class="box"></div>
+              </div>
+            </div>
+          </div>
+          <div class="input-container"><input type="button" name="name" class="mage-submit comrse-submit-trigger" name="submit-comrse" id="comrse-submit"  value="Update Account Settings"></div>
+
+          <div class="sync-inventory">
+            <div class="checkbox-container">
+              <input id="sync" name="resync_org" type="checkbox" value="1" class="check">
+              <label for="sync"><span>Resync product inventory</span> <a id="info-trigger" href=""><i class="fa fa-question-circle"></i></a></label>
+              <div class="box"></div>
+            </div>
+
+            <div class="info-bubble" style="display: none;">
+              <div class="bubble-arrow"></div>
+              <p>If you are having issues with your store updating, you may need a fresh sync of your inventory. To do this, check the box above. <a class="close" href=""><i class="fa fa-times"></i></a></p>
+            </div>
+          </div>
+          </fieldset>
+        </form>
+      </div>
+    </div><!-- End of Update Container -->
+
+    <div class="success-container" style="display:none;">
+      <h2><span class="sync-message">Syncing...</span></h2>
+      <p class="sub-head sync-message-subtext">That should do it. Go ahead and take a coffee break <br>while we sync your store.</p>
+
+      <div class="spinning-sync">
+        <i id="syncing-icon-action" class="fa fa-refresh fa-spin"></i>
+      </div>
+
+      <a href="http://sell.comr.se" class="return" target="_blank">Return to Comr.se</a>
+      <div class="comrse-settings-back"><span><i class="fa fa-caret-left"></i> Commerce Settings</span></div>
     </div>
-    <div id="mage-admin-body">
-        <!-- STEP ONE -->
-        <div id="step-one">
-            <div class="mage-admin-header">Sync</div>
-            <div class="mage-admin-subtext">
-                Please enter your Comr.se credentials below to complete registration.
-            </div>
-            <div class="mage-admin-form">
-                <form id="edit_form" name="edit_form" method="post" action="<?php echo $this->getUrl('*/*/post'); ?>">
-                    <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
-                    <fieldset id="my-fieldset">
-                        <div class="mage-admin-form-row">
-                            <div class="mage-admin-form-row-label">Organization ID</div>
-                            <div class="mage-admin-form-row-field">
-                                <input class="input-text required-entry" name="org_id" id="org_id" value="<?php echo $data['org_id']; ?>" />
-                            </div>
-                        </div>
-                        <div class="mage-admin-form-row">
-                            <div class="mage-admin-form-row-label">Comrse API Token</div>
-                            <div class="mage-admin-form-row-field">
-                                <input class="input-text required-entry" name="api_token" id="api_token" value="<?php echo $data['api_token']; ?>" />
-                            </div>
-                        </div>
-                        <div class="mage-admin-form-row">
-                            <div class="mage-admin-form-row-submit">
-                                <input type="button" class="mage-submit comrse-submit-trigger" name="submit-comrse" id="comrse-submit" value="Submit" />
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-        <!-- STEP TWO -->
-        <div id="step-two">
-            <div class="mage-admin-header">Good Job!</div>
-            <div class="mage-admin-subtext">
-                That should do it. Go ahead and take a coffee<br />
-                break or watch <a href="http://www.youtube.com/watch?v=Sagg08DrO5U" target="_blank">this</a> while we SYNC your store. 
-            </div>
-            <div class="mage-clock">
-                <img src="//comrse-static.s3.amazonaws.com/images/web/mage_admin_clock.png" />
-            </div>
-            <div class="mage-loader">
-                <img src="//comrse-static.s3.amazonaws.com/images/web/magento_loading_bar.gif" />
-            </div>
-            <div class="mage-admin-form-row">
-            <div class="mage-admin-form-row-submit">
-                <input type="button" class="mage-submit" name="back-to-comrse" id="cback-to-comrse" value="Return to Comr.se" />
-            </div>
-        </div>
-        </div>
-        <!-- STEP THREE -->
-        <div id="step-three">
-            <div class="mage-admin-header success-message">Sync</div>
-            <div class="mage-admin-subtext">
-                If you need to update your Comr.se account<br />
-                credentials please re-enter your credentials below.
-            </div>
-            <div class="mage-admin-form">
-                <form id="edit_form" name="edit_form" method="post" action="<?php echo $this->getUrl('*/*/post'); ?>">
-                    <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
-                    <fieldset id="my-fieldset">
-                        <div class="mage-admin-form-row">
-                            <div class="mage-admin-form-row-label">Organization ID</div>
-                            <div class="mage-admin-form-row-field">
-                                <input class="input-text required-entry" name="org_id" id="org_id_update" value="<?php echo $data['org_id']; ?>" />
-                            </div>
-                        </div>
-                       <div class="mage-admin-form-row">
-                            <div class="mage-admin-form-row-label">Comrse API Token</div>
-                            <div class="mage-admin-form-row-field">
-                                <input class="input-text required-entry" name="api_token" id="api_token_update" value="<?php echo $data['api_token']; ?>" />
-                            </div>
-                        </div>
-                        <div class="mage-admin-form-row">
-                            <div id="error-message">
-                                <div class="subtext">
-                                    <span id="incomplete-sync">Incomplete Sync:</span> <span id="last-order-synced"></span> of <span id="order-count"></span> orders successfully synced. Please click 'Update Settings' to resume sync.
-                                </div>
-                            </div>
-                            <div class="mage-admin-form-row-submit">
-                                <?php
-                                try{
-                                    error_reporting(0);
-                                    $org_data = Mage::getModel('comrsesync/comrseconnect')->load(1);
-                                    ?>
-                                    <input type="hidden" name="total-orders" value="<?php echo $org_data->getTotalOrders(); ?>" />
-                                    <input type="hidden" name="last-synced" value="<?php echo $org_data->getLastOrderSynced(); ?>" />
-                                    <?php
-                                }
-                                catch(Exception $e){
-                                    @mail("rhen@comr.se", "Plugin Error", $e->getMessage());
-                                }
-                                ?>
-                                <input type="hidden" name="reset-order-sync" id="reset-order-sync" value="0" />
-                                <input type="hidden" name="reset-product-sync" id="reset-product-sync" value="0" />
-                                <input type="button" class="mage-submit comrse-submit-trigger" name="submit-comrse" id="comrse-submit-update" value="Update Settings" />
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div id="mage-admin-footer">
-        Comr.se Sync 1.1.5.3
-    </div>
-</div>
+  </div>

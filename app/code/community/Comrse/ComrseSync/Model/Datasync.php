@@ -65,7 +65,6 @@ class Comrse_ComrseSync_Model_Datasync extends Mage_Payment_Model_Method_Abstrac
         ini_set('display_errors',0);
         try 
         {
-
             // check if store has comrse disabled
             $storeDisabled = Mage::getStoreConfig('advanced/modules_disable_output/Comrse_ComrseSync', $observer->getOrder()->getStoreId());
 
@@ -114,7 +113,7 @@ class Comrse_ComrseSync_Model_Datasync extends Mage_Payment_Model_Method_Abstrac
                                         {
                                             $mageProductOptions['info_buyRequest']['super_attribute']["qty"] = $qty;
                                             $payload = urlencode(json_encode($mageProductOptions['info_buyRequest']['super_attribute']));
-                                            $stockSync = Mage::helper('comrsesync')->comrseRequest("GET", Comrse_ComrseSync_Model_Config::CART_API_PATH . "stock_sync?external_id=$itemId&org_id={$orgData->getOrg()}&stock=$payload", $orgData);
+                                            $stockSync = Mage::helper('comrsesync')->comrseRequest("GET", Comrse_ComrseSync_Model_Config::CART_API_PATH . "stock_sync?external_id=" . $itemId . "&org_id=" . $orgData->getOrg() . "&stock=" . $payload, $orgData);
                                         }
                                     }
                                 }
@@ -123,8 +122,7 @@ class Comrse_ComrseSync_Model_Datasync extends Mage_Payment_Model_Method_Abstrac
                             //------------------------------------------------------------
                             // retreive comr.se amounts
                             //------------------------------------------------------------
-                            $comrseAmounts = Mage::helper('comrsesync')->comrseRequest("GET", Comrse_ComrseSync_Model_Config::CART_API_PATH . "price_sync?email_address=$customerEmailAddress&org_id=phpunit-test-framework", $orgData);
-
+                            $comrseAmounts = Mage::helper('comrsesync')->comrseRequest("GET", Comrse_ComrseSync_Model_Config::CART_API_PATH . "price_sync?email_address=" . $customerEmailAddress . "&org_id=" . $orgData->getOrg(), $orgData);
                             if ($comrseAmounts != '' && !is_null($comrseAmounts)) 
                             {
                                 $comrseAmounts = json_decode($comrseAmounts);
@@ -170,7 +168,9 @@ class Comrse_ComrseSync_Model_Datasync extends Mage_Payment_Model_Method_Abstrac
                         //------------------------------------------------------------
                         $normalizedOrder = Mage::helper('comrsesync/order')->normalizeOrderData($mageOrder);
                         if (!empty($normalizedOrder))
+                        {
                             $postOrder = Mage::helper('comrsesync')->comrseRequest("POST", Comrse_ComrseSync_Model_Config::API_PATH . "organizations/" . $orgData->getOrg() . "/orders?metrics_only=false", $orgData, json_encode(array("orders" => array($normalizedOrder))));
+                        }
                     }
                 }
             }
@@ -178,6 +178,7 @@ class Comrse_ComrseSync_Model_Datasync extends Mage_Payment_Model_Method_Abstrac
         catch(Exception $e)
         {
             Mage::log("Comrse New Order: {$e->getMessage()}");
+            return true;
         }
     }
 
@@ -274,7 +275,7 @@ class Comrse_ComrseSync_Model_Datasync extends Mage_Payment_Model_Method_Abstrac
         }
         catch (Exception $e)
         {
-            Mage::log("Comrse Product Update Sync: {$e->getMessage()}");
+            Mage::log("Comrse Product Update Sync Error: {$e->getMessage()}");
         }
     }
 }

@@ -3,41 +3,46 @@ class Comrse_ComrseSync_Helper_Data extends Mage_Core_Helper_Abstract {
 
 	// comrse request
   public function comrseRequest($method, $targetUrl, $orgData, $postData = NULL, $contentType = NULL, $time = NULL, $debug = 0) {
-  
-    // if content type not passed
-    if (is_null($contentType))
-      $contentType = "application/json";
- 
-    // prepare header
-    $headerArray = array(
-      "Content-Type: " . $contentType,
-      "X-Comrse-Token: " . $orgData->getToken(),
-      "X-Comrse-Version: " . Comrse_ComrseSync_Model_Config::COMRSE_API_VERSION,
-      "Connection: close"
-    );
+    try
+    {
+      // if content type not passed
+      if (is_null($contentType))
+        $contentType = "application/json";
+   
+      // prepare header
+      $headerArray = array(
+        "Content-Type: " . $contentType,
+        "X-Comrse-Token: " . $orgData->getToken(),
+        "X-Comrse-Version: " . Comrse_ComrseSync_Model_Config::COMRSE_API_VERSION,
+        "Connection: close"
+      );
 
- 
+      $ch = curl_init($targetUrl);
 
-    $ch = curl_init($targetUrl);
+      // if POST Data is present
+      if (!is_null($postData))
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
 
-    // if POST Data is present
-    if (!is_null($postData))
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+      // method
+      if ($method == "POST")
+        curl_setopt($ch, CURLOPT_POST, true); 
+      else
+        curl_setopt($ch,CURLOPT_CUSTOMREQUEST, $method);
 
-    // method
-    if ($method == "POST")
-      curl_setopt($ch, CURLOPT_POST, true); 
-    else
-      curl_setopt($ch,CURLOPT_CUSTOMREQUEST, $method);
+      curl_setopt($ch,CURLOPT_HTTPHEADER, $headerArray);
+      curl_setopt($ch,CURLOPT_HEADER, $debug);
+      curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, FALSE);
 
-    curl_setopt($ch,CURLOPT_HTTPHEADER, $headerArray);
-    curl_setopt($ch,CURLOPT_HEADER, $debug);
-    curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, FALSE);
+      $result = curl_exec($ch);
 
-    $result = curl_exec($ch);
-
-    return $result;
+      return $result;
+    }
+    catch (Exception $e)
+    {
+      Mage::log("Comrse Service Request Error: {$e->getMessage()}");
+      return false;
+    }
   }
 
 
@@ -57,7 +62,7 @@ class Comrse_ComrseSync_Helper_Data extends Mage_Core_Helper_Abstract {
       return $result;
     }
     catch (Exception $e) {
-      Mage::log("Comrse Basic HTTP Request: ".$e->getMessage());
+      Mage::log("Comrse Basic HTTP Request Error: ".$e->getMessage());
       return false;
     }
   }

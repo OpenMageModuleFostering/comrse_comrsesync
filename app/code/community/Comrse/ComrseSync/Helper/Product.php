@@ -34,35 +34,52 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
   * @return array $subCategories
   */
   private function mapCategories($categories) {
-    if ($categories) 
+    try
     {
-      $subCategories = array();
-      foreach ($categories as $category) 
+      $orgData = Mage::getModel('comrsesync/comrseconnect')->load(Comrse_ComrseSync_Model_Config::COMRSE_RECORD_ROW_ID);
+
+      $categorizedProductIds = json_decode(json_encode($this->categorizedProductIds));
+
+      if ($categories && !empty($categories))
       {
-        $_cat = Mage::getModel('catalog/category')->load($category->getId());
-        $comrseCategory = Mage::getModel('comrsesync/Comrse_ProductCategory');
-        $comrseCategory
-        ->setExternalId($_cat->getId())
-        ->setName($_cat->getName())
-        ->setDescription($_cat->getDescription())
-        ->setUrl($_cat->getUrlPath())
-        ->setUrlKey($_cat->getUrlKey())
-        ->setActiveStartDate(date("Y-m-d\TH:i:sO", strtotime($_cat->getCreatedAt())))
-        ->setActiveEndDate(date("Y-m-d\TH:i:sO", strtotime("+ 10 years", time())));
-
-        if (isset($this->categorizedProductIds[$_cat->getId()]) && !empty($this->categorizedProductIds[$_cat->getId()]))
-          foreach ($this->categorizedProductIds[$_cat->getId()] as $categorizedProductId)
-            $comrseCategory->addProduct($categorizedProductId);
-
-        if ((int)$_cat->getChildrenCount() > 0)
+        $subCategories = array();
+        foreach ($categories as $category)
         {
-          $childCategories = $_cat->getChildrenCategories();
-          $subCats = $this->mapCategories($childCategories);
-          $comrseCategory->setSubcategories($subCats);
+
+          $_cat = Mage::getModel('catalog/category')->load($category->getId());
+
+          $comrseCategory = Mage::getModel('comrsesync/Comrse_ProductCategory');
+          $comrseCategory
+          ->setExternalId($_cat->getId())
+          ->setName($_cat->getName())
+          ->setDescription($_cat->getDescription())
+          ->setUrl($_cat->getUrlPath())
+          ->setUrlKey($_cat->getUrlKey())
+          ->setOrganizationId($orgData->getOrg())
+          ->setActiveStartDate(date("Y-m-d\TH:i:sO", strtotime($_cat->getCreatedAt())))
+          ->setActiveEndDate(date("Y-m-d\TH:i:sO", strtotime("+ 10 years", time())));
+
+          if (isset($categorizedProductIds->{$_cat->getId()}) && !empty($categorizedProductIds->{$_cat->getId()}))
+          {
+            foreach ($categorizedProductIds->{$_cat->getId()} as $categorizedProductId)
+            {
+              $comrseCategory->addProduct($categorizedProductId);
+            }
+          }
+
+          if ((int)$_cat->getChildrenCount() > 0)
+          {
+            $childCategories = $_cat->getChildrenCategories();
+            $subCats = $this->mapCategories($childCategories);
+            $comrseCategory->setSubcategories($subCats);
+          }
+          $subCategories[] = $comrseCategory->toArray();
         }
-        $subCategories[] = $comrseCategory->toArray();
+        return $subCategories;
       }
-      return $subCategories;
+    }
+    catch (Exception $e){
+      Mage::log('Category Sync Error: '.$e->getMessage());
     }
   }
 
@@ -79,25 +96,48 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
     error_reporting(0);
     try
     {
+      //------------------------------------------------------------
+      // If Simple Product Look For Parent and Use Parent Instead
+      //------------------------------------------------------------ 
+      if ($product->getTypeId() == 'simple')
+      {
+        $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($product->getId());
+        if ($parentIds && !empty($parentIds))
+        {
+          $product =  Mage::getModel('catalog/product')->load($parentIds[0]);
+        }
+      }
+
       if ($pid = $product->getId()) 
       {
         if (!in_array($pid, $this->syncedProductIds)) 
         {
           $_item = $this->productModel->load($pid); // load extended product data
+          $productName = $_item->getName();
           $productOptions = array();
           $attrCodes = array();
           $productVisibility = $_item->getVisibility();
           $productType = $_item->getTypeID();
           $productWeight = ($_item->getWeight() > 0) ? $_item->getWeight() : 0.5;
 
-          $categories = $_item->getCategoryIds();
+          @$categories = $_item->getCategoryCollection();
+
+
           if (!empty($categories))
           {
-            foreach ($categories as $category_id) 
+            foreach ($categories as $category) 
             {
-              $_cat = Mage::getModel('catalog/category')->load($category_id) ;
-              if ($_cat->getChildrenCount() < 1)
-                $this->categorizedProductIds[$_cat->getId()][] = $_item->getId();
+              $categoryId = $category->getEntityId();
+
+              if (isset($this->categorizedProductIds[$categoryId]))
+              {
+                if (!in_array($_item->getId(), $this->categorizedProductIds[$categoryId]))
+                {
+                  $this->categorizedProductIds[$categoryId][] = $_item->getId();
+                }
+              }
+              else
+                $this->categorizedProductIds[$categoryId][] = $_item->getId();
             }
           }
 
@@ -406,7 +446,7 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
             return Mage::getModel('comrsesync/Comrse_Product')
             ->setId(null)
             ->setExternalId((string)$pid)
-            ->setName($_item->getName())
+            ->setName($productName)
             ->setLongDescription(trim(str_replace(array("\r\n", "\r", "<br />", "<br>"), "", $description)))
             ->setDimension(Mage::getModel('comrsesync/Comrse_Dimension')->toArray())
             ->setWeight(
@@ -440,7 +480,7 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
       }
     }
     catch (Exception $e){
-      var_dump($e->getMessage());
+      Mage::log('Product Sync Error: '.$e->getMessage());
     }
   }
 
@@ -475,6 +515,7 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
       {
         foreach ($stores as $store) 
         {
+          
           $storeId = $store->getId();
           
           $storeDisabled = Mage::getStoreConfig('advanced/modules_disable_output/Comrse_ComrseSync', $storeId); // check if plugin is disabled on store
@@ -484,39 +525,44 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
           {
             foreach ($this->productTypes as $productType)
             {
-              if ($multi_store)
-                $productCount = $this->productModel->getCollection()->addStoreFilter($_store_id)->addAttributeToFilter('type_id', $productType)->count(); // configurable products collection count
-              else
-                $productCount = $this->productModel->getCollection()->addAttributeToFilter('type_id', $productType)->count(); // configurable products collection count
 
+              switch ($productType)
+              {
+                case "downloadable" : $pidColumn = "dl_pid"; break; 
+                case "configurable" : $pidColumn = "config_pid"; break; 
+                case "simple" : $pidColumn = "simple_pid"; break;
+                default: $pidColumn = "simple_pid"; break;
+              }
+
+              //------------------------------------------------------------
+              // retreive last product synced data for product type
+              //------------------------------------------------------------
+              $orgData = Mage::getModel('comrsesync/comrseconnect')->load(Comrse_ComrseSync_Model_Config::COMRSE_RECORD_ROW_ID);
+              $lastProductsSynced = json_decode($orgData->getLastProductsSynced(), true);
+              $lastProductOfTypeSynced = 0;
+
+              if (isset($lastProductsSynced[$storeId][$pidColumn]))
+                $lastProductOfTypeSynced = $lastProductsSynced[$storeId][$pidColumn];
+
+              if ($multi_store)
+                $productCount = $this->productModel->getCollection()->addStoreFilter($storeId)->addAttributeToFilter('type_id', $productType)->addAttributeToFilter('entity_id', array('gt' => $lastProductOfTypeSynced))->count(); // configurable products collection count
+              else
+                $productCount = $this->productModel->getCollection()->addAttributeToFilter('type_id', $productType)->addAttributeToFilter('entity_id', array('gt' => $lastProductOfTypeSynced))->count(); // configurable products collection count
+
+           
               $batchMath = ceil($productCount / Comrse_ComrseSync_Model_Config::PRODUCT_SYNC_BATCH_SIZE);
+
 
               // iterate product batch
               for ($i = 1; $i <= $batchMath; $i++)
               {
                 if ($multiStore)
-                  $mageProducts = $this->productModel->getCollection()->addStoreFilter($_store_id)->addAttributeToFilter('type_id', $productType)->setPageSize(Comrse_ComrseSync_Model_Config::PRODUCT_SYNC_BATCH_SIZE)->setCurPage($i); // configurable products collection
+                  $mageProducts = $this->productModel->getCollection()->addStoreFilter($storeId)->addAttributeToFilter('type_id', $productType)->addAttributeToFilter('entity_id', array('gt' => $lastProductOfTypeSynced))->setPageSize(Comrse_ComrseSync_Model_Config::PRODUCT_SYNC_BATCH_SIZE)->setCurPage($i); // configurable products collection
                 else
-                  $mageProducts = $this->productModel->getCollection()->addAttributeToFilter('type_id', $productType)->setPageSize(Comrse_ComrseSync_Model_Config::PRODUCT_SYNC_BATCH_SIZE)->setCurPage($i);
+                  $mageProducts = $this->productModel->getCollection()->addAttributeToFilter('type_id', $productType)->addAttributeToFilter('entity_id', array('gt' => $lastProductOfTypeSynced))->setPageSize(Comrse_ComrseSync_Model_Config::PRODUCT_SYNC_BATCH_SIZE)->setCurPage($i);
 
                 $productPayload = array();
 
-                switch ($productType)
-                {
-                  case "downloadable" : $pidColumn = "dl_pid"; break; 
-                  case "configurable" : $pidColumn = "config_pid"; break; 
-                  case "simple" : $pidColumn = "simple_pid"; break;
-                  default: $pidColumn = "simple_pid"; break;
-                }
-
-                //------------------------------------------------------------
-                // retreive last product synced data for product type
-                //------------------------------------------------------------
-                $productData = Mage::getModel('comrsesync/comrseconnect')->load(Comrse_ComrseSync_Model_Config::COMRSE_RECORD_ROW_ID);
-                $lastProductsSynced = json_decode($productData->getLastProductsSynced(), true);
-
-                if (isset($lastProductsSynced[$storeId][$pidColumn]))
-                  $lastProductOfTypeSynced = $lastProductsSynced[$storeId][$pidColumn];
 
                 //------------------------------------------------------------
                 // Loop Products
@@ -531,23 +577,22 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
                 //------------------------------------------------------------
                 // Sync Products to Comr.se
                 //------------------------------------------------------------
-                $preparedData = json_encode(array("product_details_list" => $productPayload));
-                $postProducts = json_decode(Mage::helper('comrsesync')->comrseRequest("POST", Comrse_ComrseSync_Model_Config::API_PATH . "organizations/" . $orgId . "/products", $orgData, $preparedData));
+                if (!empty($productPayload))
+                {
+                  $preparedData = json_encode(array("product_details_list" => $productPayload));
+                  $postProducts = json_decode(Mage::helper('comrsesync')->comrseRequest("POST", Comrse_ComrseSync_Model_Config::API_PATH . "organizations/" . $orgId . "/products", $orgData, $preparedData));
 
-      
-                
-
-                if (isset($postProducts->message)){
-                  Mage::log("PRODUCT SYNC ERROR: " . json_encode($postProducts));
-                  #return false;
+                  if (isset($postProducts->message)){
+                    Mage::log("PRODUCT SYNC ERROR: " . json_encode($postProducts));
+                    #return false;
+                  }
                 }
-
              
                 //------------------------------------------------------------
                 // Record Last Synced Product ID
                 //------------------------------------------------------------
-                #$lastProductsSynced[$storeId][$pidColumn] = $productPayload[max(array_keys($productPayload))]["external_id"];
-                #$saveLastSynced = $productData->setLastProductsSynced(json_encode($lastProductsSynced))->save();
+                $lastProductsSynced[$storeId][$pidColumn] = @$productPayload[max(array_keys($productPayload))]["external_id"];
+                $saveLastSynced = @$orgData->setLastProductsSynced(json_encode($lastProductsSynced))->save();
               }
             }
           }
@@ -564,13 +609,15 @@ class Comrse_ComrseSync_Helper_Product extends Mage_Core_Helper_Abstract {
 
         if (!is_array($mappedCategories))
           $mappedCategories = array($mappedCategories);
+
           
         if (is_array($mappedCategories) && !empty($mappedCategories)) {
-          foreach ($mappedCategories as $mappedCategory) {
-            $postCategories = Mage::helper('comrsesync')->comrseRequest("POST", Comrse_ComrseSync_Model_Config::API_PATH . "/organizations/" . $orgId . "/category", $orgData, json_encode($mappedCategory), null, null, 1);
-            var_dump($postCategories);
+          foreach ($mappedCategories as $mappedCategory)
+          {
+            $postCategories = Mage::helper('comrsesync')->comrseRequest("POST", Comrse_ComrseSync_Model_Config::API_PATH . "organizations/" . $orgData->getOrg() . "/category", $orgData, json_encode($mappedCategory), null, null, 1);
           }
         }
+
       }
     }
     catch (Exception $e) 
