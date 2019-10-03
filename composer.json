@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Comrse_ComrseSync",
+    "name": "OpenMageModuleFostering\/Comrse_ComrseSync",
     "type": "magento-module",
     "license": "LGPL",
     "homepage": "",
     "description": "Comr.se Integration",
     "authors": [
-    {
-        "name": "Nate Rogers",
-        "email": "nate@comr.se"
-    }
-],
+        {
+            "name": "Nate Rogers",
+            "email": "nate@comr.se"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
